@@ -22,8 +22,8 @@ def waypoint_callback(msg): #  callback
 if __name__ == '__main__':
 
     #setup ROS node, subscribe waypoint_cb to the topic /waypoint_cmd & publish motor commands
-    rospy.init_node("crazy_driver_456")
-    waypoint_subscriber = rospy.Subscriber("/waypoint_cmd", Transform, waypoint_callback) # <--- set up callback
+    rospy.init_node("bender")
+    waypoint_subscriber = rospy.Subscriber("/waypoint_cmd", Transform, waypoint_callback) # <--- set up callback 
     motor_command_publisher = rospy.Publisher("/cmd_vel_mux/input/navi", Twist, queue_size=100)
     #you could in principle also subscribe to the laser scan as is done in assignment 1.
 

@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 import math
 
-PKG_NAME="trajectory_referee_456"
+PKG_NAME="firstairbender"
 
 XY_CLOSENESS_THRESH=0.2
 COSTHETA_CLOSENESS_THRESH=0.5-0.5*math.cos(math.pi/4)
@@ -30,27 +30,15 @@ import time
 import tf
 import tf.transformations
 import signal
-import pickle
 import random
 
 import roslib.packages
 
-if len(sys.argv)<3:
-  pass
 
-if sys.argv[1] not in ["route1","route2","route3","route4"]:
-  sys.exit(1)
+orientation_check_on = True
 
-if sys.argv[2] not in ["dis","dor"]:
-  sys.exit(1)
-
-orientation_check_on = False
-if sys.argv[2].lower()=="dor":orientation_check_on=True
-
-routefname = roslib.packages.get_pkg_dir(PKG_NAME)+"/routes/"+sys.argv[1]+".pkl"
-with open(routefname,"r") as f:
-  route_raw=pickle.load(f)
-
+#zaman,x,y,theta
+route_raw=[[1,0.3,0.4,0.4],[2,3.0,4.0,2],[3,3.0,4.0,-2],[4,5.0,1.0,0.9]]
 route=trajectory_msgs.msg.MultiDOFJointTrajectory()
 
 route.joint_names=["mobile_base"]
@@ -59,14 +47,12 @@ route.points=[]
 marker_array=visualization_msgs.msg.MarkerArray()
 marker_cntr=0
 for ritem in route_raw:
-  print ritem,"\n\n\n"
   route_point=trajectory_msgs.msg.MultiDOFJointTrajectoryPoint()
-  route_point.time_from_start=rospy.Duration(ritem[0])
 
   transform=geometry_msgs.msg.Transform()
-  transform.translation.x=ritem[1]
-  transform.translation.y=ritem[2]
-  q=tf.transformations.quaternion_from_euler(0,0,ritem[3])
+  transform.translation.x=ritem[0]
+  transform.translation.y=ritem[1]
+  q=tf.transformations.quaternion_from_euler(0,0,ritem[2])
   transform.rotation.z=q[2]
   transform.rotation.w=q[3]
   transform.rotation.x=q[0]
@@ -81,8 +67,8 @@ for ritem in route_raw:
   marker.id=marker_cntr
   marker_cntr=marker_cntr+1
   marker.type=visualization_msgs.msg.Marker.ARROW
-  marker.pose.position.x=ritem[1]
-  marker.pose.position.y=ritem[2]
+  marker.pose.position.x=ritem[0]
+  marker.pose.position.y=ritem[1]
   marker.pose.position.z=0
   marker.pose.orientation=transform.rotation
   marker_array.markers.append(marker)
@@ -93,7 +79,6 @@ for ritem in route_raw:
   marker.color.g=(1.0*marker_cntr)/len(route_raw)
   marker.color.b=1.0-(1.0*marker_cntr)/len(route_raw)
   marker.color.a=1.0
-print route.points[0].transforms[0]
 rospy.init_node('referee')
 rospy.wait_for_service("/gazebo/get_model_state")
 rospy.wait_for_service("/gazebo/apply_body_wrench")

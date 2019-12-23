@@ -1,0 +1,4 @@
+<launch>
+  <node name="pathfinder" pkg="firstairbender" type="pathfinder.py"/>
+  <node name="robotcontroller" pkg="firstairbender" type="high_speed_controller.py"/>
+</launch>
