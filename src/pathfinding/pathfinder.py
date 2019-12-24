@@ -37,8 +37,8 @@ import roslib.packages
 
 orientation_check_on = True
 
-#zaman,x,y,theta
-route_raw=[[1,0.3,0.4,0.4],[2,3.0,4.0,2],[3,3.0,4.0,-2],[4,5.0,1.0,0.9]]
+#zaman,x,y,theta   as PI
+route_raw=[[t,math.cos((t*10*math.pi)/360)*t/180,math.sin((t*10*math.pi)/360)*t/180,(10*math.pi/360)*t] for t in range(0,360,1)]
 route=trajectory_msgs.msg.MultiDOFJointTrajectory()
 
 route.joint_names=["mobile_base"]
@@ -50,9 +50,9 @@ for ritem in route_raw:
   route_point=trajectory_msgs.msg.MultiDOFJointTrajectoryPoint()
 
   transform=geometry_msgs.msg.Transform()
-  transform.translation.x=ritem[0]
-  transform.translation.y=ritem[1]
-  q=tf.transformations.quaternion_from_euler(0,0,ritem[2])
+  transform.translation.x=ritem[1]
+  transform.translation.y=ritem[2]
+  q=tf.transformations.quaternion_from_euler(0,0,ritem[3])
   transform.rotation.z=q[2]
   transform.rotation.w=q[3]
   transform.rotation.x=q[0]
@@ -67,12 +67,12 @@ for ritem in route_raw:
   marker.id=marker_cntr
   marker_cntr=marker_cntr+1
   marker.type=visualization_msgs.msg.Marker.ARROW
-  marker.pose.position.x=ritem[0]
-  marker.pose.position.y=ritem[1]
+  marker.pose.position.x=ritem[1]
+  marker.pose.position.y=ritem[2]
   marker.pose.position.z=0
   marker.pose.orientation=transform.rotation
   marker_array.markers.append(marker)
-  marker.scale.x=0.2
+  marker.scale.x=0.1
   marker.scale.y=0.02
   marker.scale.z=0.02
   marker.color.r=1.0
